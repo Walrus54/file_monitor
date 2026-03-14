@@ -35,8 +35,9 @@ void FileMonitor::start() {
 }
 
 void FileMonitor::stop() {
-    running_.store(false);
+    if (!running_.exchange(false)) return;
     if (worker_.joinable()) worker_.join();
+    std::cout << "[INFO] Monitoring stopped\n";
 }
 
 void FileMonitor::listFiles() const {
