@@ -1,11 +1,22 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <memory>
+#include <vector>
 #include "FileMonitor.h"
+#include "ConsoleNotifier.h"
+#include "checkers/ExistenceChecker.h"
+#include "checkers/SizeChecker.h"
 
 int main() {
-    FileMonitor monitor;
-    std::cout << "File Monitor v0.1\n"
+    auto notifier = std::make_shared<ConsoleNotifier>();
+    std::vector<std::shared_ptr<IFileChecker>> checkers = {
+        std::make_shared<ExistenceChecker>(),
+        std::make_shared<SizeChecker>()
+    };
+    FileMonitor monitor(std::move(checkers), notifier);
+
+    std::cout << "File Monitor v0.2\n"
               << "Commands: add <path>, remove <path>, start, stop, list, quit\n";
     std::string line;
     while (std::getline(std::cin, line)) {
