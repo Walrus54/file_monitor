@@ -8,4 +8,7 @@ include_directories(include)
 add_executable(file_monitor
     main.cpp
     src/FileMonitor.cpp
+    src/ConsoleNotifier.cpp
+    src/checkers/ExistenceChecker.cpp
+    src/checkers/SizeChecker.cpp
 )
