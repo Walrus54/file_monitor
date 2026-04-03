@@ -5,10 +5,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include_directories(include)
 
-add_executable(file_monitor
-    main.cpp
+set(LIB_SOURCES
     src/FileMonitor.cpp
     src/ConsoleNotifier.cpp
+    src/Logger.cpp
+    src/Config.cpp
     src/checkers/ExistenceChecker.cpp
     src/checkers/SizeChecker.cpp
 )
+
+add_library(file_monitor_lib STATIC ${LIB_SOURCES})
+
+add_executable(file_monitor main.cpp)
+target_link_libraries(file_monitor file_monitor_lib)

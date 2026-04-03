@@ -5,10 +5,14 @@
 #include <vector>
 #include "FileMonitor.h"
 #include "ConsoleNotifier.h"
+#include "Logger.h"
+#include "Config.h"
 #include "checkers/ExistenceChecker.h"
 #include "checkers/SizeChecker.h"
 
-int main() {
+int main(int argc, char* argv[]) {
+    if (argc > 1) Config::getInstance().loadFromFile(argv[1]);
+
     auto notifier = std::make_shared<ConsoleNotifier>();
     std::vector<std::shared_ptr<IFileChecker>> checkers = {
         std::make_shared<ExistenceChecker>(),
@@ -16,8 +20,9 @@ int main() {
     };
     FileMonitor monitor(std::move(checkers), notifier);
 
-    std::cout << "File Monitor v0.2\n"
-              << "Commands: add <path>, remove <path>, start, stop, list, quit\n";
+    Logger::getInstance().log(LogLevel::INFO, "File Monitor started");
+    std::cout << "Commands: add <path>, remove <path>, start, stop, list, quit\n";
+
     std::string line;
     while (std::getline(std::cin, line)) {
         std::istringstream iss(line);
