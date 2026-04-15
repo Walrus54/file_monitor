@@ -1,5 +1,6 @@
 #include "FileMonitor.h"
-#include <iostream>
+#include "Logger.h"
+#include "Config.h"
 #include <algorithm>
 #include <chrono>
 
@@ -13,7 +14,7 @@ bool FileMonitor::addFile(const std::string& path) {
     std::lock_guard<std::mutex> lock(mutex_);
     if (std::find(files_.begin(), files_.end(), path) != files_.end()) return false;
     files_.push_back(path);
-    std::cout << "[INFO] Watching: " << path << "\n";
+    Logger::getInstance().log(LogLevel::INFO, "Watching: " + path);
     return true;
 }
 
@@ -22,32 +23,37 @@ bool FileMonitor::removeFile(const std::string& path) {
     auto it = std::find(files_.begin(), files_.end(), path);
     if (it == files_.end()) return false;
     files_.erase(it);
-    std::cout << "[INFO] Removed: " << path << "\n";
+    Logger::getInstance().log(LogLevel::INFO, "Removed: " + path);
     return true;
 }
 
 void FileMonitor::start() {
     if (running_.exchange(true)) return;
     worker_ = std::thread(&FileMonitor::run, this);
-    std::cout << "[INFO] Monitoring started\n";
+    Logger::getInstance().log(LogLevel::INFO, "Monitoring started");
 }
 
 void FileMonitor::stop() {
     if (!running_.exchange(false)) return;
     if (worker_.joinable()) worker_.join();
-    std::cout << "[INFO] Monitoring stopped\n";
+    Logger::getInstance().log(LogLevel::INFO, "Monitoring stopped");
 }
 
 void FileMonitor::listFiles() const {
     std::lock_guard<std::mutex> lock(mutex_);
-    if (files_.empty()) { std::cout << "No files\n"; return; }
-    for (const auto& path : files_) std::cout << "  " << path << "\n";
+    if (files_.empty()) {
+        Logger::getInstance().log(LogLevel::INFO, "No files monitored");
+        return;
+    }
+    for (const auto& path : files_)
+        Logger::getInstance().log(LogLevel::INFO, "  " + path);
 }
 
 void FileMonitor::run() {
+    int interval = Config::getInstance().getInt("poll_interval", 1);
     while (running_) {
         checkFiles();
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(interval));
     }
 }
 

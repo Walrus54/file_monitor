@@ -1,6 +1,6 @@
 #include "ConsoleNotifier.h"
-#include <iostream>
+#include "Logger.h"
 
 void ConsoleNotifier::notify(const FileEvent& event) {
-    std::cout << "[EVENT] " << event.path << ": " << event.description << "\n";
+    Logger::getInstance().log(LogLevel::INFO, "[EVENT] " + event.path + ": " + event.description);
 }
