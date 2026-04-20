@@ -50,9 +50,9 @@ void FileMonitor::listFiles() const {
 }
 
 void FileMonitor::run() {
-    int interval = Config::getInstance().getInt("poll_interval", 1);
     while (running_) {
         checkFiles();
+        int interval = Config::getInstance().getInt("poll_interval", 1);
         std::this_thread::sleep_for(std::chrono::seconds(interval));
     }
 }
