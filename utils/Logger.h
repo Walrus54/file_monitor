@@ -22,7 +22,7 @@ enum class LogLevel {
 /// Копирование и присваивание запрещены.
 ///
 /// Вывод идёт в stdout; при необходимости — дополнительно в файл.
-class Logger final {
+class Logger {
 public:
     /// \brief Возвращает единственный экземпляр логгера.
     static Logger& getInstance();
