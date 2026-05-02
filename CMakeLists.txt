@@ -1,39 +1,27 @@
 cmake_minimum_required(VERSION 3.16)
-project(FileMonitor CXX)
+project(FileMonitor VERSION 1.0.0 LANGUAGES CXX)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-include_directories(include)
+if(MSVC)
+    add_compile_options(/W4 /permissive-)
+else()
+    add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
 
-set(LIB_SOURCES
-    src/core/FileMonitor.cpp
-    src/notifiers/ConsoleNotifier.cpp
-    src/utils/Logger.cpp
-    src/utils/Config.cpp
-    src/checkers/ExistenceChecker.cpp
-    src/checkers/SizeChecker.cpp
-    src/checkers/RestorationChecker.cpp
-)
+add_subdirectory(utils)
+add_subdirectory(core)
+add_subdirectory(checkers)
+add_subdirectory(notifiers)
 
-add_library(file_monitor_lib STATIC ${LIB_SOURCES})
+add_executable(file_monitor main.cpp)
+target_include_directories(file_monitor PRIVATE ${CMAKE_SOURCE_DIR})
+target_link_libraries(file_monitor PRIVATE core checkers notifiers utils)
 
-add_executable(file_monitor app/main.cpp)
-target_link_libraries(file_monitor file_monitor_lib)
-
-# Tests
-include(FetchContent)
-FetchContent_Declare(
-    googletest
-    URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
-)
-FetchContent_MakeAvailable(googletest)
-
-enable_testing()
-add_executable(unit_tests
-    tests/core/test_monitor.cpp
-    tests/checkers/test_checkers.cpp
-    tests/checkers/test_restoration.cpp
-)
-target_link_libraries(unit_tests file_monitor_lib GTest::gtest_main)
-include(GoogleTest)
-gtest_discover_tests(unit_tests)
+option(FILE_MONITOR_BUILD_TESTS "Build unit tests" OFF)
+if(FILE_MONITOR_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
