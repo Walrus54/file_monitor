@@ -3,7 +3,7 @@
  * @brief Точка входа и composition root приложения.
  *
  * Единственное место, где создаются конкретные типы (composition root).
- * FileMonitor получает зависимости через конструктор — принцип DIP соблюдён.
+ * FileMonitor получает все зависимости через конструктор — принцип DIP соблюдён.
  */
 
 #include <iostream>
@@ -19,20 +19,17 @@
 #include "utils/Logger.h"
 
 int main(int argc, char* argv[]) {
-    // Загружаем конфиг из .ini-файла, если передан аргументом командной строки
-    if (argc > 1) {
-        Config::getInstance().loadFromFile(argv[1]);
-    }
+    // Загружаем конфиг: из файла если передан аргумент, иначе — дефолты
+    Config config = (argc > 1) ? Config::fromFile(argv[1]) : Config{};
 
-    // Composition root: один класс FileChecker в трёх режимах
     auto notifier = std::make_shared<ConsoleNotifier>();
     std::vector<std::shared_ptr<IFileChecker>> checkers = {
-        std::make_shared<FileChecker>(FileChecker::Mode::Existence),   // создание / удаление
-        std::make_shared<FileChecker>(FileChecker::Mode::Size),         // изменение размера
-        std::make_shared<FileChecker>(FileChecker::Mode::Restoration)   // восстановление
+        std::make_shared<FileChecker>(FileChecker::Mode::Existence),  // создание / удаление
+        std::make_shared<FileChecker>(FileChecker::Mode::Size),        // изменение размера
+        std::make_shared<FileChecker>(FileChecker::Mode::Restoration)  // восстановление
     };
 
-    FileMonitor monitor(std::move(checkers), notifier);
+    FileMonitor monitor(std::move(checkers), notifier, config);
 
     Logger::getInstance().log(LogLevel::INFO, "File Monitor started");
     std::cout << "Commands: add <path>, remove <path>, start, stop, list, quit\n";
