@@ -139,6 +139,52 @@ sequenceDiagram
     deactivate FileMonitor
 ```
 
+### Диаграмма сигналов
+
+```mermaid
+flowchart TD
+    FS[(File System)]
+
+    subgraph Checkers["Источники сигналов (Checkers)"]
+        EC["ExistenceChecker\nhasChanged()"]
+        SC["SizeChecker\nhasChanged()"]
+    end
+
+    subgraph Monitor["Маршрутизатор (FileMonitor)"]
+        CF["checkFiles()\n[poll loop]"]
+    end
+
+    subgraph Notifiers["Получатели сигналов (Notifiers)"]
+        CN["ConsoleNotifier\nnotify(FileEvent)"]
+    end
+
+    subgraph Singletons["Синглтоны"]
+        L["Logger::getInstance()\nlog(level, msg)"]
+        C["Config::getInstance()\ngetInt(poll_interval)"]
+    end
+
+    OUT[/"stdout\n[EVENT] path: description"/]
+
+    FS -->|"stat(path)"| EC
+    FS -->|"file_size(path)"| SC
+
+    EC -->|"signal: existence changed\ngetEvent() → FileEvent"| CF
+    SC -->|"signal: size changed\ngetEvent() → FileEvent"| CF
+
+    CF -->|"emit: notify(FileEvent)"| CN
+    CN -->|"slot: log(INFO, ...)"| L
+    L --> OUT
+
+    C -.->|"poll_interval"| CF
+
+    style EC fill:#4a90d9,color:#fff
+    style SC fill:#4a90d9,color:#fff
+    style CN fill:#7ab648,color:#fff
+    style L fill:#e8a838,color:#fff
+    style C fill:#e8a838,color:#fff
+    style CF fill:#9b59b6,color:#fff
+```
+
 ### Структура проекта
 
 ```
