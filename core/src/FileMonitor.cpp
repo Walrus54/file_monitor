@@ -1,12 +1,13 @@
 #include "core/FileMonitor.h"
-#include "utils/Config.h"
 #include "utils/Logger.h"
 #include <algorithm>
 #include <chrono>
 
 FileMonitor::FileMonitor(std::vector<std::shared_ptr<IFileChecker>> checkers,
-                         std::shared_ptr<INotifier> notifier)
-    : checkers_(std::move(checkers))
+                         std::shared_ptr<INotifier>                 notifier,
+                         Config                                     config)
+    : config_(config)
+    , checkers_(std::move(checkers))
     , notifier_(std::move(notifier))
     , running_(false)
 {}
@@ -61,10 +62,7 @@ void FileMonitor::listFiles() const {
 void FileMonitor::run() {
     while (running_) {
         checkFiles();
-        // Интервал читается на каждой итерации, чтобы изменение в Config
-        // вступало в силу без перезапуска мониторинга
-        int interval = Config::getInstance().getInt("poll_interval", 1);
-        std::this_thread::sleep_for(std::chrono::seconds(interval));
+        std::this_thread::sleep_for(std::chrono::seconds(config_.pollInterval));
     }
 }
 

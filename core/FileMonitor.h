@@ -7,6 +7,7 @@
 #include <vector>
 #include "core/IFileChecker.h"
 #include "core/INotifier.h"
+#include "utils/Config.h"
 
 /**
  * @file FileMonitor.h
@@ -26,8 +27,10 @@ public:
     /// \brief Конструктор.
     /// \param checkers Набор стратегий проверки (ownership через shared_ptr).
     /// \param notifier Получатель событий.
+    /// \param config   Параметры мониторинга (интервал опроса и др.).
     FileMonitor(std::vector<std::shared_ptr<IFileChecker>> checkers,
-                std::shared_ptr<INotifier> notifier);
+                std::shared_ptr<INotifier>                 notifier,
+                Config                                     config = {});
 
     /// \brief Деструктор. Если мониторинг активен — останавливает его.
     ~FileMonitor();
@@ -57,6 +60,7 @@ public:
     void listFiles() const;
 
 private:
+    Config                                     config_;   ///< Параметры мониторинга
     std::vector<std::string>                   files_;    ///< Список наблюдаемых путей
     std::vector<std::shared_ptr<IFileChecker>> checkers_; ///< Стратегии проверки
     std::shared_ptr<INotifier>                 notifier_; ///< Получатель событий
