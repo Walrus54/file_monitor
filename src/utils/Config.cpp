@@ -1,4 +1,4 @@
-#include "Config.h"
+#include "utils/Config.hpp"
 #include <fstream>
 
 Config& Config::getInstance() {

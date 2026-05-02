@@ -1,4 +1,4 @@
-#include "checkers/ExistenceChecker.h"
+#include "checkers/ExistenceChecker.hpp"
 #include <filesystem>
 
 namespace fs = std::filesystem;

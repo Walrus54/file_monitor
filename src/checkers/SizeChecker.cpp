@@ -1,4 +1,4 @@
-#include "checkers/SizeChecker.h"
+#include "checkers/SizeChecker.hpp"
 #include <filesystem>
 
 namespace fs = std::filesystem;

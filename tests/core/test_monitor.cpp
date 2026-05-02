@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 #include <thread>
 #include <chrono>
-#include "FileMonitor.h"
-#include "ConsoleNotifier.h"
-#include "checkers/ExistenceChecker.h"
-#include "checkers/SizeChecker.h"
+#include "core/FileMonitor.hpp"
+#include "notifiers/ConsoleNotifier.hpp"
+#include "checkers/ExistenceChecker.hpp"
+#include "checkers/SizeChecker.hpp"
 
 class FileMonitorTest : public ::testing::Test {
 protected:

@@ -3,13 +3,13 @@
 #include <sstream>
 #include <memory>
 #include <vector>
-#include "FileMonitor.h"
-#include "ConsoleNotifier.h"
-#include "Logger.h"
-#include "Config.h"
-#include "checkers/ExistenceChecker.h"
-#include "checkers/SizeChecker.h"
-#include "checkers/RestorationChecker.h"
+#include "core/FileMonitor.hpp"
+#include "notifiers/ConsoleNotifier.hpp"
+#include "utils/Logger.hpp"
+#include "utils/Config.hpp"
+#include "checkers/ExistenceChecker.hpp"
+#include "checkers/SizeChecker.hpp"
+#include "checkers/RestorationChecker.hpp"
 
 int main(int argc, char* argv[]) {
     if (argc > 1) Config::getInstance().loadFromFile(argv[1]);
