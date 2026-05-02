@@ -6,7 +6,7 @@
 #include <thread>
 #include <vector>
 #include "core/IFileChecker.h"
-#include "core/INotifier.h"
+#include "core/Signal.h"
 #include "utils/Config.h"
 
 /**
@@ -16,41 +16,42 @@
 
 /// \brief Оркестратор мониторинга файлов (SRP, DIP).
 ///
-/// Запускает фоновый поток, который с заданным интервалом обходит список файлов
-/// и передаёт каждый путь всем зарегистрированным чекерам.
-/// При обнаружении изменения вызывает INotifier::notify().
+/// Запускает фоновый поток, который с заданным интервалом обходит список
+/// файлов и прогоняет их через чекеры. При обнаружении изменения испускает
+/// сигнал fileChanged — все подключённые слоты вызываются автоматически.
 ///
-/// Принцип DIP: класс зависит только от абстракций IFileChecker и INotifier;
-/// конкретные типы создаются снаружи и передаются через конструктор.
+/// \code
+/// FileMonitor monitor(checkers, config);
+/// monitor.fileChanged.connect([](const FileEvent& e) { /* слот */ });
+/// monitor.start();
+/// \endcode
 class FileMonitor {
 public:
+    /// \brief Сигнал, испускаемый при каждом обнаруженном изменении файла.
+    /// Слоты подключаются через fileChanged.connect(...) до вызова start().
+    Signal<FileEvent> fileChanged;
+
     /// \brief Конструктор.
     /// \param checkers Набор стратегий проверки (ownership через shared_ptr).
-    /// \param notifier Получатель событий.
-    /// \param config   Параметры мониторинга (интервал опроса и др.).
+    /// \param config   Параметры мониторинга.
     FileMonitor(std::vector<std::shared_ptr<IFileChecker>> checkers,
-                std::shared_ptr<INotifier>                 notifier,
                 Config                                     config = {});
 
     /// \brief Деструктор. Если мониторинг активен — останавливает его.
     ~FileMonitor();
 
-    // Запрет копирования: класс владеет потоком
     FileMonitor(const FileMonitor&)            = delete;
     FileMonitor& operator=(const FileMonitor&) = delete;
 
     /// \brief Добавляет файл в список наблюдаемых.
-    /// \param path Путь к файлу (дубликаты игнорируются).
-    /// \return true если файл добавлен, false если уже отслеживается.
+    /// \return true если добавлен, false если уже отслеживается.
     bool addFile(const std::string& path);
 
     /// \brief Удаляет файл из списка наблюдаемых.
-    /// \param path Путь к файлу.
-    /// \return true если файл удалён, false если не был в списке.
+    /// \return true если удалён, false если не был в списке.
     bool removeFile(const std::string& path);
 
     /// \brief Запускает фоновый поток мониторинга.
-    /// Повторный вызов без stop() игнорируется.
     void start();
 
     /// \brief Останавливает фоновый поток и дожидается его завершения.
@@ -61,16 +62,12 @@ public:
 
 private:
     Config                                     config_;   ///< Параметры мониторинга
-    std::vector<std::string>                   files_;    ///< Список наблюдаемых путей
+    std::vector<std::string>                   files_;    ///< Наблюдаемые пути
     std::vector<std::shared_ptr<IFileChecker>> checkers_; ///< Стратегии проверки
-    std::shared_ptr<INotifier>                 notifier_; ///< Получатель событий
     std::thread                                worker_;   ///< Фоновый поток
     std::atomic<bool>                          running_;  ///< Флаг активности цикла
     mutable std::mutex                         mutex_;    ///< Защита files_
 
-    /// \brief Основной цикл фонового потока.
     void run();
-
-    /// \brief Единичный обход всех файлов через все чекеры.
     void checkFiles();
 };

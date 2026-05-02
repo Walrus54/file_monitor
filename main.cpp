@@ -2,8 +2,8 @@
  * @file main.cpp
  * @brief Точка входа и composition root приложения.
  *
- * Единственное место, где создаются конкретные типы (composition root).
- * FileMonitor получает все зависимости через конструктор — принцип DIP соблюдён.
+ * Здесь создаются конкретные типы и подключаются слоты к сигналам.
+ * FileMonitor ничего не знает о том, кто обрабатывает его сигнал.
  */
 
 #include <iostream>
@@ -19,17 +19,21 @@
 #include "utils/Logger.h"
 
 int main(int argc, char* argv[]) {
-    // Загружаем конфиг: из файла если передан аргумент, иначе — дефолты
     Config config = (argc > 1) ? Config::fromFile(argv[1]) : Config{};
 
-    auto notifier = std::make_shared<ConsoleNotifier>();
     std::vector<std::shared_ptr<IFileChecker>> checkers = {
-        std::make_shared<FileChecker>(FileChecker::Mode::Existence),  // создание / удаление
-        std::make_shared<FileChecker>(FileChecker::Mode::Size),        // изменение размера
-        std::make_shared<FileChecker>(FileChecker::Mode::Restoration)  // восстановление
+        std::make_shared<FileChecker>(FileChecker::Mode::Existence),
+        std::make_shared<FileChecker>(FileChecker::Mode::Size),
+        std::make_shared<FileChecker>(FileChecker::Mode::Restoration)
     };
 
-    FileMonitor monitor(std::move(checkers), notifier, config);
+    FileMonitor monitor(std::move(checkers), config);
+
+    // Подключаем слот: ConsoleNotifier::notify вызывается при каждом fileChanged
+    auto notifier = std::make_shared<ConsoleNotifier>();
+    monitor.fileChanged.connect([notifier](const FileEvent& e) {
+        notifier->notify(e);
+    });
 
     Logger::getInstance().log(LogLevel::INFO, "File Monitor started");
     std::cout << "Commands: add <path>, remove <path>, start, stop, list, quit\n";
