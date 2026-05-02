@@ -1,5 +1,5 @@
 #pragma once
-#include "INotifier.h"
+#include "core/INotifier.hpp"
 
 class ConsoleNotifier : public INotifier {
 public:

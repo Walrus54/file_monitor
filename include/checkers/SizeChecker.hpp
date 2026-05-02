@@ -1,11 +1,12 @@
 #pragma once
-#include "IFileChecker.h"
+#include "core/IFileChecker.hpp"
 #include <unordered_map>
 
-class ExistenceChecker : public IFileChecker {
+class SizeChecker : public IFileChecker {
 public:
     bool hasChanged(const std::string& path) override;
     FileEvent getEvent(const std::string& path) const override;
+
 private:
-    std::unordered_map<std::string, bool> prevState_;
+    std::unordered_map<std::string, uintmax_t> prevSize_;
 };

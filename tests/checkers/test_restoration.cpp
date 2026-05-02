@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <fstream>
 #include <filesystem>
-#include "checkers/RestorationChecker.h"
+#include "checkers/RestorationChecker.hpp"
 
 namespace fs = std::filesystem;
 static const std::string TEST_FILE = "/tmp/fm_test_restoration.txt";

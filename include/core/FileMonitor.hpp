@@ -5,8 +5,8 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
-#include "IFileChecker.h"
-#include "INotifier.h"
+#include "core/IFileChecker.hpp"
+#include "core/INotifier.hpp"
 
 class FileMonitor {
 public:

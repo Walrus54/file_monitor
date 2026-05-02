@@ -1,6 +1,6 @@
-#include "FileMonitor.h"
-#include "Logger.h"
-#include "Config.h"
+#include "core/FileMonitor.hpp"
+#include "utils/Logger.hpp"
+#include "utils/Config.hpp"
 #include <algorithm>
 #include <chrono>
 
