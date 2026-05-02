@@ -12,9 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "checkers/ExistenceChecker.h"
-#include "checkers/RestorationChecker.h"
-#include "checkers/SizeChecker.h"
+#include "checkers/FileChecker.h"
 #include "core/FileMonitor.h"
 #include "notifiers/ConsoleNotifier.h"
 #include "utils/Config.h"
@@ -26,12 +24,12 @@ int main(int argc, char* argv[]) {
         Config::getInstance().loadFromFile(argv[1]);
     }
 
-    // Composition root: создаём конкретные реализации абстракций
+    // Composition root: один класс FileChecker в трёх режимах
     auto notifier = std::make_shared<ConsoleNotifier>();
     std::vector<std::shared_ptr<IFileChecker>> checkers = {
-        std::make_shared<ExistenceChecker>(),  // создание / удаление файла
-        std::make_shared<SizeChecker>(),        // изменение размера
-        std::make_shared<RestorationChecker>()  // восстановление после удаления
+        std::make_shared<FileChecker>(FileChecker::Mode::Existence),   // создание / удаление
+        std::make_shared<FileChecker>(FileChecker::Mode::Size),         // изменение размера
+        std::make_shared<FileChecker>(FileChecker::Mode::Restoration)   // восстановление
     };
 
     FileMonitor monitor(std::move(checkers), notifier);
