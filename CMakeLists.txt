@@ -6,10 +6,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include_directories(include)
 
 set(LIB_SOURCES
-    src/FileMonitor.cpp
-    src/ConsoleNotifier.cpp
-    src/Logger.cpp
-    src/Config.cpp
+    src/core/FileMonitor.cpp
+    src/notifiers/ConsoleNotifier.cpp
+    src/utils/Logger.cpp
+    src/utils/Config.cpp
     src/checkers/ExistenceChecker.cpp
     src/checkers/SizeChecker.cpp
     src/checkers/RestorationChecker.cpp
@@ -17,7 +17,7 @@ set(LIB_SOURCES
 
 add_library(file_monitor_lib STATIC ${LIB_SOURCES})
 
-add_executable(file_monitor main.cpp)
+add_executable(file_monitor app/main.cpp)
 target_link_libraries(file_monitor file_monitor_lib)
 
 # Tests
@@ -30,9 +30,9 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 add_executable(unit_tests
-    tests/test_monitor.cpp
-    tests/test_checkers.cpp
-    tests/test_restoration.cpp
+    tests/core/test_monitor.cpp
+    tests/checkers/test_checkers.cpp
+    tests/checkers/test_restoration.cpp
 )
 target_link_libraries(unit_tests file_monitor_lib GTest::gtest_main)
 include(GoogleTest)

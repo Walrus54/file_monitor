@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 #include <fstream>
 #include <filesystem>
-#include "checkers/ExistenceChecker.h"
-#include "checkers/SizeChecker.h"
+#include "checkers/ExistenceChecker.hpp"
+#include "checkers/SizeChecker.hpp"
 
 namespace fs = std::filesystem;
 static const std::string TEST_FILE = "/tmp/fm_test_checker.txt";

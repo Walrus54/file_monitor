@@ -1,4 +1,4 @@
-#include "checkers/RestorationChecker.h"
+#include "checkers/RestorationChecker.hpp"
 #include <filesystem>
 
 namespace fs = std::filesystem;
