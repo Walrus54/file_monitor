@@ -6,9 +6,9 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 
 add_executable(unit_tests
-    test_monitor.cpp
-    test_checkers.cpp
-    test_restoration.cpp
+    test_signal.cpp    # Signal<T> — чистые юнит-тесты, нет ФС и потоков
+    test_monitor.cpp   # FileMonitor — мок-чекеры, нет реальных файлов
+    test_checkers.cpp  # FileChecker — изолированные тесты с /tmp
 )
 target_include_directories(unit_tests PRIVATE ${CMAKE_SOURCE_DIR})
 target_link_libraries(unit_tests PRIVATE core checkers notifiers utils GTest::gtest_main)
