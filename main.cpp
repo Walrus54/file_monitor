@@ -9,6 +9,7 @@
 #include "Config.h"
 #include "checkers/ExistenceChecker.h"
 #include "checkers/SizeChecker.h"
+#include "checkers/RestorationChecker.h"
 
 int main(int argc, char* argv[]) {
     if (argc > 1) Config::getInstance().loadFromFile(argv[1]);
@@ -16,7 +17,8 @@ int main(int argc, char* argv[]) {
     auto notifier = std::make_shared<ConsoleNotifier>();
     std::vector<std::shared_ptr<IFileChecker>> checkers = {
         std::make_shared<ExistenceChecker>(),
-        std::make_shared<SizeChecker>()
+        std::make_shared<SizeChecker>(),
+        std::make_shared<RestorationChecker>()
     };
     FileMonitor monitor(std::move(checkers), notifier);
 

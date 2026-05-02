@@ -12,6 +12,7 @@ set(LIB_SOURCES
     src/Config.cpp
     src/checkers/ExistenceChecker.cpp
     src/checkers/SizeChecker.cpp
+    src/checkers/RestorationChecker.cpp
 )
 
 add_library(file_monitor_lib STATIC ${LIB_SOURCES})
@@ -31,6 +32,7 @@ enable_testing()
 add_executable(unit_tests
     tests/test_monitor.cpp
     tests/test_checkers.cpp
+    tests/test_restoration.cpp
 )
 target_link_libraries(unit_tests file_monitor_lib GTest::gtest_main)
 include(GoogleTest)
