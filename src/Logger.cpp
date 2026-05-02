@@ -41,7 +41,9 @@ std::string Logger::levelToString(LogLevel level) {
 std::string Logger::timestamp() {
     auto now = std::chrono::system_clock::now();
     auto t = std::chrono::system_clock::to_time_t(now);
+    struct tm tm_buf{};
+    localtime_r(&t, &tm_buf);
     std::ostringstream oss;
-    oss << std::put_time(std::localtime(&t), "%Y-%m-%d %H:%M:%S");
+    oss << std::put_time(&tm_buf, "%Y-%m-%d %H:%M:%S");
     return oss.str();
 }
